@@ -1,6 +1,6 @@
 ## Drone Segmentation Projects
 - This project is built on [mmdetection](https://github.com/open-mmlab/mmdetection).
-- The Drone Datasets are trained and evaluated on [Mask R-CNN] (https://arxiv.org/pdf/1703.06870.pdf)
+- The Drone Datasets are trained and evaluated on [Mask R-CNN](https://arxiv.org/pdf/1703.06870.pdf)
 
 - Linux or macOS (Windows is in experimental support)
 - Python 3.6+
