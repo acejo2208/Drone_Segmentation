@@ -138,13 +138,28 @@ python tools/train.py configs/mask_rcnn_drone/mask_rcnn.py
 ##### Train with multiple GPUs
 ```shell
 bash ./tools/dist_train.sh ${CONFIG_FILE} ${GPU_NUM}
-E.g., for our dataset
+E.g., Our dataset
 bash ./tools/dist_train.py configs/mask_rcnn_drone/mask_rcnn.py 4
 ```
 ##### Test with a single GPU
 ```shell
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}] [--show]
-E.g., for our dataset
+E.g., Our dataset
 python tools/test.py configs/mask_rcnn_drone/mask_rcnn.py work_dirs/vis_drone/mask_rcnn.pth --eval bbox segm
 ```
+1. Visualize the results. Press and key for the next image
+```shell
+python tools/test.py configs/mask_rcnn_drone/mask_rcnn.py work_dirs/vis_drone/mask_rcnn.pth --show
+```
+2. Test and save the painted images for future visualization
+```shell
+python tools/test.py configs/mask_rcnn_drone/mask_rcnn.py work_dirs/vis_drone/mask_rcnn.pth --show_dir visulization
+```
+3. Test and evaluate the mAP
+```shell
+python tools/test.py configs/mask_rcnn_drone/mask_rcnn.py work_dirs/vis_drone/mask_rcnn.pth --eval bbox segm
+```
+
+## Acknowledgement
+Many thanks to the open source codes, i.e., [mmdetection](https://github.com/open-mmlab/mmdetection) and [labelme](https://github.com/wkentaro/labelme).
 
