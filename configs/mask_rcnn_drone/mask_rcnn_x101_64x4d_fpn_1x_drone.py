@@ -3,7 +3,7 @@ _base_ = [
     '../_base_/datasets/drone_instance.py', '../_base_/default_runtime.py'
 ]
 model = dict(
-    pretrained='open-mmlab://resnext101_64x4d',
+    pretrained='None',
     backbone=dict(
         type='ResNeXt',
         depth=101,
