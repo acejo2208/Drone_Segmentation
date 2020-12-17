@@ -1,7 +1,7 @@
-## Drone Segmentation Projects
+# Drone Segmentation Projects
 - This project is built on [mmdetection](https://github.com/open-mmlab/mmdetection).
 - The Drone Datasets are trained and evaluated on [Mask R-CNN](https://arxiv.org/pdf/1703.06870.pdf)
-
+## Environment Requirements 
 - Linux or macOS (Windows is in experimental support)
 - Python 3.6+
 - PyTorch 1.3+
@@ -9,31 +9,13 @@
 - GCC 5+
 - [MMCV](https://mmcv.readthedocs.io/en/latest/#installation)
 
-The compatible MMDetection and MMCV versions are as below. Please install the correct version of MMCV to avoid installation issues.
-
-| MMDetection version |    MMCV version     |
-|:-------------------:|:-------------------:|
-| master              | mmcv-full>=1.1.5, <=1.3|
-| 2.6.0               | mmcv-full>=1.1.5, <=1.3|
-| 2.5.0               | mmcv-full>=1.1.5, <=1.3|
-| 2.4.0               | mmcv-full>=1.1.1, <=1.3|
-| 2.3.0               | mmcv-full==1.0.5|
-| 2.3.0rc0            | mmcv-full>=1.0.2    |
-| 2.2.1               | mmcv==0.6.2         |
-| 2.2.0               | mmcv==0.6.2         |
-| 2.1.0               | mmcv>=0.5.9, <=0.6.1|
-| 2.0.0               | mmcv>=0.5.1, <=0.5.8|
-
-Note: You need to run `pip uninstall mmcv` first if you have mmcv installed.
-If mmcv and mmcv-full are both installed, there will be `ModuleNotFoundError`.
-
 ## Installation
 
 1. Create a conda virtual environment and activate it.
 
     ```shell
-    conda create -n open-mmlab python=3.7 -y
-    conda activate open-mmlab
+    conda create -n drone_islab python=3.7 -y
+    conda activate drone_islab
     ```
 
 2. Install PyTorch and torchvision following the [official instructions
@@ -88,8 +70,8 @@ If mmcv and mmcv-full are both installed, there will be `ModuleNotFoundError`.
 4. Clone the MMDetection repository.
 
     ```shell
-    git clone https://github.com/open-mmlab/mmdetection.git
-    cd mmdetection
+    git clone https://github.com/acejo2208/Drone_Segmentation
+    cd Drone_Segmentation
     ```
 
 5. Install build requirements and then install MMDetection.
@@ -171,19 +153,3 @@ To use the default MMDetection installed in the environment rather than that you
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
 ```
 
-## Verification
-
-To verify whether MMDetection and the required environment are installed correctly, we can run sample python codes to initialize a detector and inference a demo image:
-
-```python
-from mmdet.apis import init_detector, inference_detector
-
-config_file = 'configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py'
-device = 'cuda:0'
-# init a detector
-model = init_detector(config_file, device=device)
-# inference the demo image
-inference_detector(model, 'demo/demo.jpg')
-```
-
-The above code is supposed to run successfully upon you finish the installation.
