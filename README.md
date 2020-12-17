@@ -126,4 +126,25 @@ To use the default MMDetection installed in the environment rather than that you
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
 ```
 ## Train and Test Models on Drone Segmentation Dataset
+- To change the configuration, please go to [Drone_Segmentation/configs/mask_rcnn_drone/mask_rcnn.py](https://github.com/acejo2208/Drone_Segmentation/blob/main/configs/mask_rcnn_drone/mask_rcnn.py)
+- The checkpoints file under [Drone_Segmentation/work_dirs/vis_drone](https://github.com/acejo2208/Drone_Segmentation/tree/main/work_dirs/vis_drone)
+##### Train with a single GPU
+```shell
+python tools/train.py ${CONFIG_FILE}
+E.g., for our dataset
+python tools/train.py configs/mask_rcnn_drone/mask_rcnn.py
+```
+
+##### Train with multiple GPUs
+```shell
+bash ./tools/dist_train.sh ${CONFIG_FILE} ${GPU_NUM}
+E.g., for our dataset
+bash ./tools/dist_train.py configs/mask_rcnn_drone/mask_rcnn.py 4
+```
+##### Test with a single GPU
+```shell
+python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}] [--show]
+E.g., for our dataset
+python tools/test.py configs/mask_rcnn_drone/mask_rcnn.py work_dirs/vis_drone/mask_rcnn.pth --eval bbox segm
+```
 
