@@ -1,5 +1,5 @@
 dataset_type = 'DroneSegDataset'
-classes = ('background', 'lawn, flower_garden', 'forest', 'liver', 'road', 'pavement',
+classes = ('lawn, flower_garden', 'forest', 'liver', 'road', 'pavement',
            'parking_lot', 'crosswalk', 'hiking_trail', 'trail', 'flower_bed')
 data_root = 'data/projects/'
 img_norm_cfg = dict(
@@ -30,8 +30,8 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    samples_per_gpu=1,
-    workers_per_gpu=1,
+    samples_per_gpu=2,
+    workers_per_gpu=2,
     train=dict(
         type=dataset_type,
         ann_file=data_root + 'annotations/train_annotations.json',
