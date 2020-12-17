@@ -79,7 +79,7 @@ def main():
             dict(supercategory=None, id=class_id, name=class_name,)
         )
 
-    out_ann_file = osp.join(args.output_dir, "test_annotations.json")
+    out_ann_file = osp.join(args.output_dir, "train_annotations.json")
     label_files = glob.glob(osp.join(args.input_dir, "*.json"))
     for image_id, filename in enumerate(label_files):
         print("Generating dataset from:", filename)
