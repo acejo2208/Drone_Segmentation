@@ -2,73 +2,23 @@ import argparse
 import glob
 import os.path as osp
 
-#import cityscapesscripts.helpers.labels as CSLabels
+import cityscapesscripts.helpers.labels as CSLabels
 import mmcv
 import numpy as np
 import pycocotools.mask as maskUtils
 
-from collections import namedtuple
-
-Label = namedtuple('Label', ['name', 'id', 'trainId', 'category',
-    'categoryId', 'hasInstances', 'ignoreInEval', 'color',])
-
-labels = [
-    #       name                     id    trainId   category            
-    #     catId     hasInstances   ignoreInEval   color
-    Label(  'unlabeled'            ,  0 ,      255 , 'void'            
-        , 0       , False        , True         , (  0,  0,  0) ),
-    Label(  'background'           , 1  ,       255, 'void'             
-        , 0       , False        , True         , (  0,  0,  0) ),
-    Label(  'lawn, flower_garden'  , 2  ,        0 , 'nature'            
-        , 1       , True        , False        , (213,121,219) ),
-    Label(  'forest'               , 3  ,        1 , 'nature'            
-        , 1       , True        , False        , (4, 200, 3) ),
-    Label(  'liver'                , 4  ,        2 , 'nature'            
-        , 1       , True        , False        , (232,250,187) ),
-    Label(  'road'                 , 5  ,        3 , 'flat'            
-        , 2       , True        , False        , (128, 64,128) ),
-    Label(  'pavement'             , 6  ,        4 , 'flat'            
-        , 2       , True        , False        , (244, 35,232) ),
-    Label(  'parking_lot'          , 7  ,        5 , 'flat'            
-        , 2       , True        , False        , (250,170,160) ),
-    Label(  'crosswalk'            , 8  ,        6 , 'flat'            
-        , 2       , True        , False        , (252,239,44) ),
-    Label(  'hiking_trail'         , 9  ,        7 , 'flat'            
-        , 2       , True        , False        , (251,181,244) ),
-    Label(  'trail'                , 10  ,        8 , 'flat'            
-        , 2       , True        , False        , (245,162,214) ),
-    Label(  'flower_bed'           , 11  ,       9 , 'nature'           
-        ,1       , True        , False        , (201,243, 98) )  
-]
-
-name2label      = { label.name    : label for label in labels}
-# id to label object
-id2label        = { label.id      : label for label in labels}
-# trainId to label object
-trainId2label   = { label.trainId : label for label in reversed(labels)}
-
-
-category2labels = {}
-for label in labels:
-    category = label.category
-    if category in category2labels:
-        category2labels[category].append(label)
-    else:
-        category2labels[category] = [label]
-
-
 
 def collect_files(img_dir, gt_dir):
-    suffix = '.jpg'
+    suffix = 'leftImg8bit.png'
     files = []
-    for img_file in glob.glob(osp.join(img_dir, '*.jpg')):
+    for img_file in glob.glob(osp.join(img_dir, '**/*.png')):
         assert img_file.endswith(suffix), img_file
-        #inst_file = gt_dir + img_file[
-        #    len(img_dir):-len(suffix)] + '_gtFine_instanceIds.png'
+        inst_file = gt_dir + img_file[
+            len(img_dir):-len(suffix)] + 'gtFine_instanceIds.png'
         # Note that labelIds are not converted to trainId for seg map
-        json_file = gt_dir + img_file[
-            len(img_dir):-len(suffix)] + '.json'
-        files.append((img_file, json_file))
+        segm_file = gt_dir + img_file[
+            len(img_dir):-len(suffix)] + 'gtFine_labelIds.png'
+        files.append((img_file, inst_file, segm_file))
     assert len(files), f'No images found in {img_dir}'
     print(f'Loaded {len(files)} images from {img_dir}')
 
@@ -87,16 +37,16 @@ def collect_annotations(files, nproc=1):
 
 
 def load_img_info(files):
-    img_file, json_file = files
-    json_dict = json.load(json_file)
+    img_file, inst_file, segm_file = files
+    inst_img = mmcv.imread(inst_file, 'unchanged')
     # ids < 24 are stuff labels (filtering them first is about 5% faster)
-    #unique_inst_ids = np.unique(inst_img[inst_img >= 24])
+    unique_inst_ids = np.unique(inst_img[inst_img >= 24])
     anno_info = []
     for inst_id in unique_inst_ids:
         # For non-crowd annotations, inst_id // 1000 is the label_id
         # Crowd annotations have <1000 instance ids
         label_id = inst_id // 1000 if inst_id >= 1000 else inst_id
-        label = id2label[label_id]
+        label = CSLabels.id2label[label_id]
         if not label.hasInstances or label.ignoreInEval:
             continue
 
@@ -119,14 +69,14 @@ def load_img_info(files):
             area=area.tolist(),
             segmentation=mask_rle)
         anno_info.append(anno)
-    #video_name = osp.basename(osp.dirname(img_file))
+    video_name = osp.basename(osp.dirname(img_file))
     img_info = dict(
         # remove img_prefix for filename
-        file_name=osp.basename(img_file),
+        file_name=osp.join(video_name, osp.basename(img_file)),
         height=inst_img.shape[0],
         width=inst_img.shape[1],
         anno_info=anno_info,
-        segm_file=osp.basename(segm_file))
+        segm_file=osp.join(video_name, osp.basename(segm_file)))
 
     return img_info
 
@@ -148,7 +98,7 @@ def cvt_annotations(image_infos, out_json_name):
             out_json['annotations'].append(anno_info)
             ann_id += 1
         img_id += 1
-    for label in labels:
+    for label in CSLabels.labels:
         if label.hasInstances and not label.ignoreInEval:
             cat = dict(id=label.id, name=label.name)
             out_json['categories'].append(cat)
@@ -162,8 +112,8 @@ def cvt_annotations(image_infos, out_json_name):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='Convert Drone annotations to COCO format')
-    parser.add_argument('cityscapes_path', help='drone data path')
+        description='Convert Cityscapes annotations to COCO format')
+    parser.add_argument('cityscapes_path', help='cityscapes data path')
     parser.add_argument('--img-dir', default='leftImg8bit', type=str)
     parser.add_argument('--gt-dir', default='gtFine', type=str)
     parser.add_argument('-o', '--out-dir', help='output path')

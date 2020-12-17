@@ -1,0 +1,12 @@
+__ignore__
+background
+lawn, flower_garden
+forest
+liver
+road
+pavement
+parking_lot
+crosswalk
+hiking_trail
+trail
+flower_bed

@@ -63,12 +63,12 @@ def collect_files(img_dir, gt_dir):
     files = []
     for img_file in glob.glob(osp.join(img_dir, '*.jpg')):
         assert img_file.endswith(suffix), img_file
-        #inst_file = gt_dir + img_file[
-        #    len(img_dir):-len(suffix)] + '_gtFine_instanceIds.png'
+        inst_file = gt_dir + img_file[
+            len(img_dir):-len(suffix)] + '_gtFine_instanceIds.png'
         # Note that labelIds are not converted to trainId for seg map
-        json_file = gt_dir + img_file[
-            len(img_dir):-len(suffix)] + '.json'
-        files.append((img_file, json_file))
+        segm_file = gt_dir + img_file[
+            len(img_dir):-len(suffix)] + '_gtFine_labelIds.png'
+        files.append((img_file, inst_file, segm_file))
     assert len(files), f'No images found in {img_dir}'
     print(f'Loaded {len(files)} images from {img_dir}')
 
@@ -87,10 +87,10 @@ def collect_annotations(files, nproc=1):
 
 
 def load_img_info(files):
-    img_file, json_file = files
-    json_dict = json.load(json_file)
+    img_file, inst_file, segm_file = files
+    inst_img = mmcv.imread(inst_file, 'unchanged')
     # ids < 24 are stuff labels (filtering them first is about 5% faster)
-    #unique_inst_ids = np.unique(inst_img[inst_img >= 24])
+    unique_inst_ids = np.unique(inst_img[inst_img >= 24])
     anno_info = []
     for inst_id in unique_inst_ids:
         # For non-crowd annotations, inst_id // 1000 is the label_id
