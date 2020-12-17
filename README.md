@@ -81,33 +81,6 @@
     pip install -v -e .  # or "python setup.py develop"
     ```
 
-Note:
-
-a. Following the above instructions, MMDetection is installed on `dev` mode
-, any local modifications made to the code will take effect without the need to reinstall it.
-
-b. If you would like to use `opencv-python-headless` instead of `opencv
--python`,
-you can install it before installing MMCV.
-
-c. Some dependencies are optional. Simply running `pip install -v -e .` will
- only install the minimum runtime requirements. To use optional dependencies like `albumentations` and `imagecorruptions` either install them manually with `pip install -r requirements/optional.txt` or specify desired extras when calling `pip` (e.g. `pip install -v -e .[optional]`). Valid keys for the extras field are: `all`, `tests`, `build`, and `optional`.
-
-### Install with CPU only
-
-The code can be built for CPU only environment (where CUDA isn't available).
-
-In CPU mode you can run the demo/webcam_demo.py for example.
-However some functionality is gone in this mode:
-
-- Deformable Convolution
-- Deformable ROI pooling
-- CARAFE: Content-Aware ReAssembly of FEatures
-- nms_cuda
-- sigmoid_focal_loss_cuda
-
-So if you try to run inference with a model containing deformable convolution you will get an error.
-
 ### Another option: Docker Image
 
 We provide a [Dockerfile](https://github.com/open-mmlab/mmdetection/blob/master/docker/Dockerfile) to build an image. Ensure that you are using [docker version](https://docs.docker.com/engine/install/) >=19.03.
@@ -128,8 +101,8 @@ docker run --gpus all --shm-size=8g -it -v {DATA_DIR}:/mmdetection/data mmdetect
 Assuming that you already have CUDA 10.1 installed, here is a full script for setting up MMDetection with conda.
 
 ```shell
-conda create -n open-mmlab python=3.7 -y
-conda activate open-mmlab
+conda create -n drone_islab python=3.7 -y
+conda activate drone_islab
 
 conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch -y
 
@@ -138,7 +111,7 @@ pip install mmcv-full==latest+torch1.6.0+cu101 -f https://download.openmmlab.com
 
 # install mmdetection
 git clone https://github.com/open-mmlab/mmdetection.git
-cd mmdetection
+cd Drone_Segmentation
 pip install -r requirements/build.txt
 pip install -v -e .
 ```
@@ -152,4 +125,5 @@ To use the default MMDetection installed in the environment rather than that you
 ```shell
 PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
 ```
+## Train and Test Models on Drone Segmentation Dataset
 
